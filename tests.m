@@ -38,12 +38,15 @@ for p=1:99
     
     % Perform Compressed Sensing recovery
     x0 = A.'*y;
+    try
     xpb = l1eq_pd(x0, A, [], y);
     xp = basisMatrix'*xpb;
     imagep=reshape(xp(1:originalN),size(image));
     
     %figure, subplot(2,1,1),imshow(image), subplot(2,1,2), imshow(imagep)
     save(sprintf('%s/%d.mat',basis,p),'imagep','p');
+    catch ME
+    end
 end
 end
 
