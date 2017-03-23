@@ -30,7 +30,7 @@ disp(sprintf('%.0i %%',round(nnz(xb)/N*100)))
 
 for p=1:99
     rng(0);                                      % set RNG seed
-    K = round(N*p);                           % number of measurements to take (N < L)
+    K = round(N*p/100);                           % number of measurements to take (N < L)
     
     % Obtain K measurements
     A = randn(K, N);
