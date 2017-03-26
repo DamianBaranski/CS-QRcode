@@ -1,6 +1,7 @@
-function [ output_args ] = tests( image,scanning, basis )
+function [ output_args ] = tests( filename,scanning, basis )
 %TESTS Summary of this function goes here
 %   Detailed explanation goes here
+image=imread(filename);
 image=double(image);
 
 switch scanning
@@ -39,8 +40,11 @@ end
 
 %signal in new basis
 xb = basisMatrix*x;
-disp(sprintf('%.0i %%',round(nnz(xb)/N*100)))
-
+ratio=round(nnz(xb)/N*100);
+disp(sprintf('%.0i %%',ratio));
+[~,name,~]=fileparts(filename)
+mkdir(sprintf('%s/%s/%s/',basis,scanning,name))
+save(sprintf('%s/%s/%s/settings.mat',basis,scanning,name),'ratio','scanning','basis','filename');
 for p=1:99
     rng(0);                                      % set RNG seed
     K = round(N*p/100);                           % number of measurements to take (N < L)
@@ -63,8 +67,7 @@ for p=1:99
     end
     
     %figure, subplot(2,1,1),imshow(image), subplot(2,1,2), imshow(imagep)
-    mkdir(sprintf('%s/%s/',basis,scanning))
-    save(sprintf('%s/%s/%d.mat',basis,scanning,p),'imagep','p');
+    save(sprintf('%s/%s/%s/%d.mat',basis,scanning,name,p),'imagep','p');
     catch ME
     end
 end
