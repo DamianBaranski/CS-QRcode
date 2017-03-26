@@ -1,8 +1,18 @@
-function [ output_args ] = tests( image,shutter, basis )
+function [ output_args ] = tests( image,scanning, basis )
 %TESTS Summary of this function goes here
 %   Detailed explanation goes here
 image=double(image);
-x=reshape(image,[],1);
+
+switch scanning
+    case 'standard'
+        x=reshape(image,[],1);
+    case 'zigzag'
+        x=zigzag(image);
+    otherwise
+        disp('Wrong sampling method')
+        return
+end
+
 
 %calculate length
 originalN=length(x);
@@ -22,6 +32,9 @@ switch basis
         basisMatrix=haargen(N);
     case 'welsh'
         basisMatrix=hadamard(N);
+    otherwise
+            disp('Wrong basis')
+            return
 end
 
 %signal in new basis
@@ -41,10 +54,17 @@ for p=1:99
     try
     xpb = l1eq_pd(x0, A, [], y);
     xp = basisMatrix'*xpb;
-    imagep=reshape(xp(1:originalN),size(image));
+    
+    switch scanning
+        case 'standard'
+            imagep=reshape(xp(1:originalN),size(image));
+        case 'zigzag'
+            imagep=izigzag(xp(1:originalN),size(image,1),size(image,2));
+    end
     
     %figure, subplot(2,1,1),imshow(image), subplot(2,1,2), imshow(imagep)
-    save(sprintf('%s/%d.mat',basis,p),'imagep','p');
+    mkdir(sprintf('%s/%s/',basis,scanning))
+    save(sprintf('%s/%s/%d.mat',basis,scanning,p),'imagep','p');
     catch ME
     end
 end
